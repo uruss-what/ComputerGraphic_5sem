@@ -4,14 +4,14 @@ from matplotlib import pyplot as plt
 
 
 def ideal_lowpass_filter(img, cutoff_freq):
-    fft = np.fft.fft2(img)
-    shifted_fft = np.fft.fftshift(fft)
+    fft = np.fft.fft2(img) # для дискретного преобразования фурье (из пикселей в частоты)
+    shifted_fft = np.fft.fftshift(fft) # перемещает компоненты нулевой частоты из углов изображения в его центр
     
-    rows, cols = img.shape
-    crow, ccol = rows//2, cols//2
-    shifted_fft[crow-cutoff_freq:crow+cutoff_freq, ccol-cutoff_freq:ccol+cutoff_freq] = 0
-    shifted_fft = np.fft.ifftshift(shifted_fft)
-    filtered_img = np.fft.ifft2(shifted_fft)
+    rows, cols = img.shape 
+    crow, ccol = rows//2, cols//2 # центр
+    shifted_fft[crow-cutoff_freq:crow+cutoff_freq, ccol-cutoff_freq:ccol+cutoff_freq] = 0 # диапозон для удаления компонент высоких частот
+    shifted_fft = np.fft.ifftshift(shifted_fft) # двигаем обратно
+    filtered_img = np.fft.ifft2(shifted_fft) # возвращаем отфильтрованное изображение
     
     filtered_img = np.abs(filtered_img)
     filtered_img = filtered_img.astype(np.uint8)
@@ -50,16 +50,12 @@ def gaussian_lowpass_filter(img, cutoff_freq):
    
     return filtered_img
 
-# Загрузка изображения
 img = cv2.imread('kartinka.jpg', 0)
 
-# Использование идеального фильтра низких частот
 ideal_filtered_img = ideal_lowpass_filter(img, 10)
 
-# Использование фильтра Баттерворта
 butterworth_filtered_img = butterworth_filter(img, cutoff_freq=50, order=2, type='low')
 
-# Использование гауссовского фильтра низких частот
 gaussian_filtered_img = gaussian_lowpass_filter(img, 10)
 
 
